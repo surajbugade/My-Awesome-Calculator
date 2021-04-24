@@ -1,79 +1,161 @@
-import { useState } from 'react';
-import './App.css';
+import { useState } from "react";
+import "./App.css";
 
 function App() {
-
   let [oldExpression, setOldExpression] = useState("");
-  let [expression, setExpression] = useState("");
+  let [expression, setExpression] = useState("0");
+  let [prev, setPrev] = useState("ANS");
 
   let numerics = new Set("0123456789");
-  let operators = new Set("+-*/");
-  let buttons = ["(", ")", "%", "AC", "7", "8", "9", "/", "4", "5", "6", "*", "1", "2", "3", "-", "0", ".", "=", "+"]
+  let operators = new Set("+-*/%.");
+  
+  let buttons = [
+    "(",
+    ")",
+    "%",
+    "CE",
+    "7",
+    "8",
+    "9",
+    "/",
+    "4",
+    "5",
+    "6",
+    "*",
+    "1",
+    "2",
+    "3",
+    "-",
+    "0",
+    ".",
+    "=",
+    "+",
+  ];
 
-  let handleKeyUp = function(event){
-    console.log(event.key);
-    if(event.key === "Backspace") {
-      setExpression(expression.slice(0,-1));
-    } else if(numerics.has(event.key) || operators.has(event.key)){
-      setExpression(expression + event.key);
-    } else if(event.key === "Enter"){ // eslint-disable-next-line
-      let evaluation = eval(expression); 
-      setOldExpression(expression);
-      expression = setExpression(String(evaluation));
-    }
+  let evaluateExpression = function () {
+    // eslint-disable-next-line
+    let evaluation = eval(expression);
+    setOldExpression(expression + "=");
+    expression = setExpression(String(evaluation));
+    setPrev("ANS");
   }
+
+  let putNumerics = function (value) {
+    if(prev == "ANS") {
+      setOldExpression("ANS = " + expression);
+      setExpression(value);
+    }
+    else {
+      setExpression(expression + value);
+    }
+    setPrev("NUM");
+  }
+
+  let putOperator = function (value) {
+    if(prev != "OP"){
+      setExpression(expression + value);
+    } else {
+      setExpression(expression.slice(0, -1) + value);
+    }
+    setPrev("OP");
+  }
+
+  let putDelete = function () {
+    if(expression.length >= 1){
+      setExpression(expression.slice(0, -1));
+    }
+    setPrev("DEL");
+  }
+
+  let handleKeyUp = function (event) {
+    console.log(event.key);
+    if (event.key === "Backspace") {
+      putDelete();
+    } else if (numerics.has(event.key)) {
+      putNumerics(event.key);
+    } else if(operators.has(event.key)) {
+      putOperator(event.key);
+    } else if (event.key === "Enter") {
+      evaluateExpression();
+    }
+  };
 
   return (
     <div className="App" tabIndex={0} onKeyUp={handleKeyUp}>
-
-      <div  
-        style={{
-        width: "400px",
-        background: "#ffffff",
+      <div style = {{
+        padding: "10px",
+        borderRadius: "10px",
+        background: "#444444",
         display: "flex",
         flexDirection: "column",
-        alignItems: "flex-end",
-        justifyContent: "center",
-        padding: "20px",
-        borderRadius: "10px",
-        overflow: "hidden",
-        margin: "20px"
+      }}>
+        <h1 style = {{
+          color: "#ffffff",
+          textAlign: "center"
+        }}>
+          My Awesome Calculator
+        </h1>
+      
+      <div
+        style={{
+          width: "400px",
+          background: "#ffffff",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-end",
+          justifyContent: "center",
+          padding: "20px",
+          borderRadius: "10px",
+          overflow: "hidden",
+          margin: "20px",
         }}
       >
+        <h5>{oldExpression}</h5>
+        <h1>{expression}</h1>
+      </div>
 
-    <h5>{oldExpression}</h5>
-    <h1>{expression}</h1>
-    </div>
-    <div 
+      <div
         style={{
-        width: "400px",
-        background: "#ffffff",
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "flex-end",
-        justifyContent: "center",
-        padding: "20px",
-        borderRadius: "10px",
-        flexWrap: "wrap"
+          width: "400px",
+          background: "#ffffff",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "flex-end",
+          justifyContent: "center",
+          padding: "20px",
+          margin: "20px",
+          borderRadius: "10px",
+          flexWrap: "wrap",
         }}
       >
         {buttons.map(function (buttonValue, idx) {
           return (
-            <button 
-            style={{
-              width: "90px",
-              height: "40px",
-              padding: "5px",
-              margin: "5px",
-              fontSize: "19px"
-            }}
+            <button
+              style={{
+                width: "90px",
+                height: "40px",
+                padding: "5px",
+                margin: "5px",
+                fontSize: "19px",
+              }}
+              onClick={function () {
+                if (buttonValue === "CE") {
+                  putDelete();
+                } else if (numerics.has(buttonValue)) {
+                  putNumerics(buttonValue);
+                } else if(operators.has(buttonValue)) {
+                  putOperator(buttonValue);
+                } else if (buttonValue === "=") {
+                  evaluateExpression();
+                }
+              }}
             >
               {buttonValue}
             </button>
           );
         })}
-
-    </div>
+        </div>
+      </div>
     </div>
   );
 }
