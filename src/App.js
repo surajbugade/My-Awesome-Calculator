@@ -107,6 +107,7 @@ function App() {
     <div className="App" tabIndex={0} onKeyUp={handleKeyUp}>
       <div style = {{
         padding: "10px",
+        height: "690px",
         borderRadius: "15px",
         background: "#333333",
         display: "flex",
@@ -136,7 +137,7 @@ function App() {
       <div
         style={{
           width: "400px",
-          background: "#ffffff",
+          background: "#b3e6b3",
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-end",
@@ -154,7 +155,7 @@ function App() {
       <div
         style={{
           width: "400px",
-          background: "#ffffff",
+          background: "#ffa64d",
           display: "flex",
           flexDirection: "row",
           alignItems: "flex-end",
